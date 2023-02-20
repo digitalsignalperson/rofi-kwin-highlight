@@ -1251,11 +1251,12 @@ static void selection_changed_callback(G_GNUC_UNUSED listview *lv,
                                        unsigned int index, void *udata) {
   RofiViewState *state = (RofiViewState *)udata;
 
-  // fprintf(stderr, color_red "selection changed callback index %i\n" color_reset, state->line_map[index]);
-  int fstate = SELECTED;
-  char *text = mode_get_display_value(state->sw, state->line_map[index],
+  // fprintf(stderr, color_red "selection changed callback index %i\n" color_reset, index);
+  if (index > 0 && index < state->filtered_lines) {
+    int fstate = SELECTED;
+    char *text = mode_get_display_value(state->sw, state->line_map[index],
                                       &fstate, NULL, TRUE);
-
+  }
   if (state->tb_current_entry) {
     if (index < state->filtered_lines) {
       int fstate = 0;
