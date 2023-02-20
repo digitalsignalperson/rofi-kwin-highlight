@@ -767,6 +767,10 @@ static inline int act_on_window(xcb_window_t window) {
 static ModeMode window_mode_result(Mode *sw, int mretv,
                                    G_GNUC_UNUSED char **input,
                                    unsigned int selected_line) {
+  
+  gchar *command[] = {"qdbus", "org.kde.KWin", "/org/kde/KWin/HighlightWindow", "org.kde.KWin.HighlightWindow.highlightWindows", "(", ")", NULL};
+  g_spawn_async(NULL, command, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+  
   WindowModePrivateData *rmpd =
       (WindowModePrivateData *)mode_get_private_data(sw);
   ModeMode retv = MODE_EXIT;
@@ -954,7 +958,16 @@ static char *_get_display_value(const Mode *sw, unsigned int selected_line,
     *state |= ACTIVE;
   }
   *state |= MARKUP;
-  return get_entry ? _generate_display_string(rmpd, c) : NULL;
+  char* text = get_entry ? _generate_display_string(rmpd, c) : NULL;
+  if (*state & SELECTED) {
+    int32_t id = rmpd->ids->array[selected_line];
+    fprintf(stderr, color_red "%i\n" color_reset, id);
+
+    gchar *command[] = {"qdbus", "org.kde.KWin", "/org/kde/KWin/HighlightWindow", "org.kde.KWin.HighlightWindow.highlightWindows", "(", g_strdup_printf("%d", id), ")", NULL};
+    g_spawn_async(NULL, command, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL);
+    // fprintf(stderr, color_red "window id %i, selection index %i, text %s\n" color_reset, id, selected_line, text);
+  }
+  return text;
 }
 
 /**
