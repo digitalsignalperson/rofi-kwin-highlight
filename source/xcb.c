@@ -1268,7 +1268,7 @@ static void main_loop_x11_event_handler_view(xcb_generic_event_t *event) {
       xcb->mouse_seen = TRUE;
     }
     rofi_view_handle_mouse_motion(state, xme->event_x, xme->event_y,
-                                  !button_mask && config.hover_select);
+                                  button_mask && config.hover_select);
     break;
   }
   case XCB_BUTTON_PRESS: {
